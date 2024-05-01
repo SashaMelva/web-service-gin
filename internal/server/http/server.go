@@ -19,7 +19,7 @@ type Server struct {
 }
 
 func NewServer(log *zap.SugaredLogger, app *app.App, config *config.ConfigHttpServer) *Server {
-
+	log.Debug("URL: " + config.Host + ":" + config.Port)
 	router := gin.Default()
 	handler := httphandler.NewHendler(log, app)
 
@@ -28,12 +28,13 @@ func NewServer(log *zap.SugaredLogger, app *app.App, config *config.ConfigHttpSe
 	})
 
 	router.POST("/event/", handler.CreateEventHandler)
-	// router.GET("/events/", handler.getAllEventsHandler)
+	router.GET("/events/", handler.GetAllEventsHandler)
+	router.GET("/event/:id", handler.GetEventByIdHandler)
 	// router.DELETE("/event/:id", handler.deleteEventHandler)
 
 	return &Server{
 		srv: &http.Server{
-			Addr:    ":8080",
+			Addr:    config.Host + ":" + config.Port,
 			Handler: router,
 		},
 		log: log,

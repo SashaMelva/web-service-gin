@@ -17,3 +17,28 @@ func (a *App) CreateEvent(event *entity.Event) int {
 
 	return id
 }
+
+func (a *App) GetEvent(id int) (*entity.Event, error) {
+	var event *entity.Event
+	event, err := a.storage.GetEventById(id)
+
+	if err != nil {
+		a.log.Error(err)
+		return nil, err
+	}
+
+	return event, nil
+}
+
+func (a *App) GetEvents() ([]entity.Event, error) {
+	var events []entity.Event
+
+	events, err := a.storage.GetEvents()
+
+	if err != nil {
+		a.log.Error(err)
+		return nil, err
+	}
+
+	return events, nil
+}
