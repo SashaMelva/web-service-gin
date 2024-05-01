@@ -6,7 +6,7 @@ import (
 	"github.com/SashaMelva/web-service-gin/internal/entity"
 )
 
-func (a *App) CreateEvent(event *entity.Event) int {
+func (a *App) CreateEvent(event *entity.Event) (int, error) {
 	id, err := a.storage.CreateEvent(event)
 
 	if err != nil {
@@ -15,7 +15,7 @@ func (a *App) CreateEvent(event *entity.Event) int {
 		a.log.Info(fmt.Sprintf("Create event whith id = %v", id))
 	}
 
-	return id
+	return id, err
 }
 
 func (a *App) GetEvent(id int) (*entity.Event, error) {

@@ -12,9 +12,18 @@ func (s *Service) CreateEventHandler(ctx *gin.Context) {
 	var event entity.Event
 	if err := ctx.ShouldBindJSON(&event); err != nil {
 		ctx.String(http.StatusBadRequest, err.Error())
+		return
 	}
 
-	id := s.app.CreateEvent(&event)
+	s.log.Debug(event)
+
+	id, err := s.app.CreateEvent(&event)
+
+	if err != nil {
+		ctx.String(http.StatusNotFound, err.Error())
+		return
+	}
+
 	ctx.JSON(http.StatusOK, gin.H{"Id": id})
 }
 
