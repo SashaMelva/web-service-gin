@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/SashaMelva/web-service-gin/internal/config"
 	"go.uber.org/zap"
 )
 

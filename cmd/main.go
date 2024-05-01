@@ -2,20 +2,26 @@ package main
 
 import (
 	"context"
-	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/SashaMelva/web-service-gin/internal/app"
+	"github.com/SashaMelva/web-service-gin/internal/config"
+	"github.com/SashaMelva/web-service-gin/internal/logger"
+	"github.com/SashaMelva/web-service-gin/internal/memory/connection"
+	storage "github.com/SashaMelva/web-service-gin/internal/memory/storage/postgre"
+	"github.com/SashaMelva/web-service-gin/internal/server/http"
 )
 
 func main() {
-
+	configFile := "../configs/"
 	config := config.New(configFile)
-	log := logger.New(config.Logger, "../logFiles/")
+	log := logger.New(config.Logger, "../logs/")
 
 	connectionDB := connection.New(config.DataBase, log)
 
-	memstorage := memory.New(connectionDB.StorageDb, log)
+	memstorage := storage.New(connectionDB.StorageDb, log)
 	app := app.New(log, memstorage, config.HostClientApi)
 
 	httpServer := http.NewServer(log, app, config.HttpServer)
@@ -30,17 +36,11 @@ func main() {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
 		defer cancel()
 
-		if err := httpServer.Stop(ctx); err != nil {
-			log.Error("failed to stop http server: " + err.Error())
-		}
+		httpServer.Stop(ctx)
 	}()
 
 	log.Info("Services is running...")
 	log.Debug("Debug mode enabled")
 
-	if err := httpServer.Start(ctx); err != nil {
-		log.Error("failed to start http server: " + err.Error())
-		cancel()
-		os.Exit(1)
-	}
+	httpServer.Start(ctx)
 }
