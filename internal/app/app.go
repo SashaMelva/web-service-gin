@@ -6,15 +6,13 @@ import (
 )
 
 type App struct {
-	HostClientApi string
-	storage       *storage.Storage
-	Logger        *zap.SugaredLogger
+	storage *storage.Storage
+	log     *zap.SugaredLogger
 }
 
-func New(logger *zap.SugaredLogger, storage *storage.Storage, host *string) *App {
+func New(logger *zap.SugaredLogger, storage *storage.Storage) *App {
 	return &App{
-		HostClientApi: *host,
-		storage:       storage,
-		Logger:        logger,
+		storage: storage,
+		log:     logger,
 	}
 }

@@ -8,10 +8,9 @@ import (
 )
 
 type Config struct {
-	HostClientApi *string
-	HttpServer    *ConfigHttpServer
-	Logger        *ConfigLogger
-	DataBase      *ConfigDB
+	HttpServer *ConfigHttpServer
+	Logger     *ConfigLogger
+	DataBase   *ConfigDB
 }
 
 type ConfigHttpServer struct {
@@ -45,7 +44,6 @@ func New(pahToFile string) Config {
 	}
 
 	configLog := ConfigLogger{}
-	hostClient := viper.Get("hostClientApi").(string)
 	configDB := ConfigDB{
 		NameDB:   viper.Get("nameDB").(string),
 		Host:     viper.Get("hostDB").(string),
@@ -55,11 +53,11 @@ func New(pahToFile string) Config {
 	}
 
 	configHttpServer := ConfigHttpServer{
-		Host: viper.Get("hostServerHttp").(string),
-		Port: viper.Get("portServerHttp").(string),
+		Host: viper.Get("hostHttpServer").(string),
+		Port: viper.Get("portHttpServe").(string),
 	}
 
-	level, err := zapcore.ParseLevel(viper.Get("Level").(string))
+	level, err := zapcore.ParseLevel(viper.Get("level").(string))
 	if err != nil {
 		configLog = ConfigLogger{zapcore.DebugLevel, viper.Get("logEncoding").(string)}
 	} else {
@@ -67,9 +65,8 @@ func New(pahToFile string) Config {
 	}
 
 	return Config{
-		HostClientApi: &hostClient,
-		HttpServer:    &configHttpServer,
-		Logger:        &configLog,
-		DataBase:      &configDB,
+		HttpServer: &configHttpServer,
+		Logger:     &configLog,
+		DataBase:   &configDB,
 	}
 }
