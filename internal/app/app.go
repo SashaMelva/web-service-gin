@@ -20,6 +20,7 @@ func New(logger *zap.SugaredLogger, storage *storage.Storage) *App {
 			"week":   "week",
 			"mounth": "mounth",
 			"today":  "mounth",
+			"none":   "none",
 		},
 	}
 }

@@ -75,7 +75,11 @@ func (a *App) GetEventsSendingByPeriodConst(period string, startDate *time.Time)
 		return nil, errors.New("Invalid period name")
 	}
 
-	events, err = a.storage.GetEventsSendingByPeriod(a.getDatesByPeriod(period, startDate))
+	if a.period[period] == "none" {
+		events, err = a.storage.GetEventsWithNotNullDateSendig()
+	} else {
+		events, err = a.storage.GetEventsSendingByPeriod(a.getDatesByPeriod(period, startDate))
+	}
 
 	if err != nil {
 		a.log.Error(err)
@@ -92,8 +96,11 @@ func (a *App) GetEventsByPeriodConst(period string, startDate *time.Time) (*enti
 	if a.period[period] == "" {
 		return nil, errors.New("Invalid period name")
 	}
-
-	events, err = a.storage.GetEventsByPeriod(a.getDatesByPeriod(period, startDate))
+	if a.period[period] == "none" {
+		events, err = a.storage.GetEvents()
+	} else {
+		events, err = a.storage.GetEventsByPeriod(a.getDatesByPeriod(period, startDate))
+	}
 
 	if err != nil {
 		a.log.Error(err)

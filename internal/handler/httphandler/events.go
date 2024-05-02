@@ -35,28 +35,23 @@ func (s *Service) GetAllEventsHandler(ctx *gin.Context) {
 
 	period := ctx.Params.ByName("period")
 	startDateStr := ctx.Query("startDate")
-	if period == "" {
-		s.log.Debug("get all events")
-		events, err = s.app.GetEvents()
 
+	s.log.Debug(startDateStr)
+	if startDateStr == "" {
+		startDate = time.Now()
 	} else {
-		s.log.Debug(startDateStr)
-		if startDateStr == "" {
-			startDate = time.Now()
-		} else {
-			layout := "2006-01-02"
-			startDate, err = time.Parse(layout, startDateStr)
+		layout := "2006-01-02"
+		startDate, err = time.Parse(layout, startDateStr)
 
-			if err != nil {
-				ctx.String(http.StatusNotFound, err.Error())
-				return
-			}
+		if err != nil {
+			ctx.String(http.StatusNotFound, err.Error())
+			return
 		}
-
-		s.log.Debug("get events by period ", period)
-		s.log.Debug("StartDate ", startDate)
-		events, err = s.app.GetEventsByPeriodConst(period, &startDate)
 	}
+
+	s.log.Debug("get events by period ", period)
+	s.log.Debug("StartDate ", startDate)
+	events, err = s.app.GetEventsByPeriodConst(period, &startDate)
 
 	if err != nil {
 		ctx.String(http.StatusNotFound, err.Error())
