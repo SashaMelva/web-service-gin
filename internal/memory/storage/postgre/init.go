@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"context"
 	"database/sql"
 	"sync"
 
@@ -10,7 +9,6 @@ import (
 
 type Storage struct {
 	Logger       *zap.SugaredLogger
-	Ctx          context.Context
 	ConnectionDB *sql.DB
 	sync.RWMutex
 }

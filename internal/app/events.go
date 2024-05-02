@@ -30,10 +30,49 @@ func (a *App) GetEvent(id int) (*entity.Event, error) {
 	return event, nil
 }
 
-func (a *App) GetEvents() ([]entity.Event, error) {
-	var events []entity.Event
+func (a *App) GetEvents() (*entity.EventsList, error) {
+	var events *entity.EventsList
 
 	events, err := a.storage.GetEvents()
+
+	if err != nil {
+		a.log.Error(err)
+		return nil, err
+	}
+
+	return events, nil
+}
+
+func (a *App) DeleteEvent(id int) error {
+	err := a.storage.DeleteEventById(id)
+
+	if err != nil {
+		a.log.Error(err)
+		return err
+	}
+
+	return nil
+}
+
+func (a *App) UpdateEvent(event *entity.Event) error {
+	err := a.storage.UpdateEvent(event)
+
+	if err != nil {
+		a.log.Error(err)
+		return err
+	}
+
+	return nil
+}
+
+func (a *App) GetEventsByPeriodConst(period string) (*entity.EventsList, error) {
+	var events *entity.EventsList
+	var err error
+
+	a.log.Debug(period, entity.Period(period))
+	// if entity.Period(period) != "" {
+	// 	events, err = a.storage.GetEventsByPeriod(entity.Period(period))
+	// }
 
 	if err != nil {
 		a.log.Error(err)

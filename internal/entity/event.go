@@ -10,3 +10,15 @@ type Event struct {
 	Description   string     `json:"description" db:"description"`
 	DataTimeSend  *time.Time `json:"date_time_send" db:"date_time_send"`
 }
+
+type EventsList struct {
+	Events []*Event `json:"events"`
+}
+
+type Period string
+
+const (
+	Week   Period = "week"
+	Mounth Period = "week"
+	Today  Period = "today"
+)

@@ -28,9 +28,10 @@ func NewServer(log *zap.SugaredLogger, app *app.App, config *config.ConfigHttpSe
 	})
 
 	router.POST("/event/", handler.CreateEventHandler)
-	router.GET("/events/", handler.GetAllEventsHandler)
+	router.GET("/events", handler.GetAllEventsHandler)
 	router.GET("/event/:id", handler.GetEventByIdHandler)
-	// router.DELETE("/event/:id", handler.deleteEventHandler)
+	router.DELETE("/event/:id", handler.DeleteEventHandler)
+	router.PUT("/event/", handler.UpdateEventHandler)
 
 	return &Server{
 		srv: &http.Server{
