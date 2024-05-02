@@ -3,6 +3,7 @@ package httphandler
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/SashaMelva/web-service-gin/internal/entity"
 	"github.com/gin-gonic/gin"
@@ -30,24 +31,32 @@ func (s *Service) CreateEventHandler(ctx *gin.Context) {
 func (s *Service) GetAllEventsHandler(ctx *gin.Context) {
 	var events *entity.EventsList
 	var err error
+	var startDate time.Time
 
-	// period := ctx.Query("period")
-	// if period == "" {
+	period := ctx.Params.ByName("period")
+	startDateStr := ctx.Query("startDate")
+	if period == "" {
+		s.log.Debug("get all events")
+		events, err = s.app.GetEvents()
 
-	s.log.Debug("events")
-	events, err = s.app.GetEvents()
+	} else {
+		s.log.Debug(startDateStr)
+		if startDateStr == "" {
+			startDate = time.Now()
+		} else {
+			layout := "2006-01-02"
+			startDate, err = time.Parse(layout, startDateStr)
 
-	s.log.Debug("events2")
-	// } else {
-	// 	// split := strings.Split(period, ":")
-	// 	// if len(split) == 2 {
-	// 	// 	events, err = s.app.GetEventsByPeriod(period)
-	// 	// } else {
+			if err != nil {
+				ctx.String(http.StatusNotFound, err.Error())
+				return
+			}
+		}
 
-	// 	// }
-	// 	s.log.Debug("Period ", period)
-	// 	events, err = s.app.GetEventsByPeriodConst(period)
-	// }
+		s.log.Debug("get events by period ", period)
+		s.log.Debug("StartDate ", startDate)
+		events, err = s.app.GetEventsByPeriodConst(period, &startDate)
+	}
 
 	if err != nil {
 		ctx.String(http.StatusNotFound, err.Error())

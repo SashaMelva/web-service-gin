@@ -1,7 +1,9 @@
 package app
 
 import (
+	"errors"
 	"fmt"
+	"time"
 
 	"github.com/SashaMelva/web-service-gin/internal/entity"
 )
@@ -65,14 +67,42 @@ func (a *App) UpdateEvent(event *entity.Event) error {
 	return nil
 }
 
-func (a *App) GetEventsByPeriodConst(period string) (*entity.EventsList, error) {
+func (a *App) GetEventsByPeriodConst(period string, startDate *time.Time) (*entity.EventsList, error) {
 	var events *entity.EventsList
 	var err error
+	l, _ := time.LoadLocation("Europe/Moscow")
 
-	a.log.Debug(period, entity.Period(period))
-	// if entity.Period(period) != "" {
-	// 	events, err = a.storage.GetEventsByPeriod(entity.Period(period))
-	// }
+	if a.period[period] == "" {
+		return nil, errors.New("Invalid period name")
+	}
+
+	startDateTime := time.Date(startDate.Year(), startDate.Month(), startDate.Day(), 0, 0, 0, 0, l)
+	endDateTime := startDateTime.Add(24 * time.Hour)
+
+	switch period {
+	case "Week":
+		switch startDateTime.Weekday() {
+		case time.Monday:
+			endDateTime = startDateTime.Add(7 * 24 * time.Hour)
+		case time.Tuesday:
+			endDateTime = startDateTime.Add(6 * 24 * time.Hour)
+		case time.Wednesday:
+			endDateTime = startDateTime.Add(5 * 24 * time.Hour)
+		case time.Thursday:
+			endDateTime = startDateTime.Add(4 * 24 * time.Hour)
+		case time.Friday:
+			endDateTime = startDateTime.Add(3 * 24 * time.Hour)
+		case time.Saturday:
+			endDateTime = startDateTime.Add(2 * 24 * time.Hour)
+		case time.Sunday:
+			endDateTime = startDateTime.Add(1 * 24 * time.Hour)
+		}
+	case "Mounth":
+		endDateTime = time.Date(startDate.Year(), startDateTime.Month()+1, startDate.Day(), 0, 0, 0, 0, l)
+	}
+
+	a.log.Debug(startDateTime, endDateTime)
+	events, err = a.storage.GetEventsByPeriod(startDateTime, endDateTime)
 
 	if err != nil {
 		a.log.Error(err)

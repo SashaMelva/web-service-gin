@@ -15,10 +15,4 @@ type EventsList struct {
 	Events []*Event `json:"events"`
 }
 
-type Period string
-
-const (
-	Week   Period = "week"
-	Mounth Period = "week"
-	Today  Period = "today"
-)
+type Period map[string]string

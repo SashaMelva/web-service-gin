@@ -98,10 +98,10 @@ func (s *Storage) UpdateEvent(event *entity.Event) error {
 	return nil
 }
 
-func (s *Storage) GetEventsByPeriod(dateStart, dateEnd time.Time) ([]entity.Event, error) {
-	var events []entity.Event
+func (s *Storage) GetEventsByPeriod(dateStart, dateEnd time.Time) (*entity.EventsList, error) {
+	var events *entity.EventsList
 	query := `select id, title, date_time_start, date_time_end, description, date_time_send from events where date_time_start >= $1::timestamp and date_time_end < $2::timestamp`
-	rows, err := s.ConnectionDB.Query(query)
+	rows, err := s.ConnectionDB.Query(query, dateStart, dateEnd)
 
 	if err != nil {
 		return nil, err
@@ -121,7 +121,7 @@ func (s *Storage) GetEventsByPeriod(dateStart, dateEnd time.Time) ([]entity.Even
 			return nil, err
 		}
 
-		events = append(events, event)
+		events.Events = append(events.Events, &event)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
