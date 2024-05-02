@@ -67,14 +67,44 @@ func (a *App) UpdateEvent(event *entity.Event) error {
 	return nil
 }
 
-func (a *App) GetEventsByPeriodConst(period string, startDate *time.Time) (*entity.EventsList, error) {
+func (a *App) GetEventsSendingByPeriodConst(period string, startDate *time.Time) (*entity.EventsList, error) {
 	var events *entity.EventsList
 	var err error
-	l, _ := time.LoadLocation("Europe/Moscow")
 
 	if a.period[period] == "" {
 		return nil, errors.New("Invalid period name")
 	}
+
+	events, err = a.storage.GetEventsSendingByPeriod(a.getDatesByPeriod(period, startDate))
+
+	if err != nil {
+		a.log.Error(err)
+		return nil, err
+	}
+
+	return events, nil
+}
+
+func (a *App) GetEventsByPeriodConst(period string, startDate *time.Time) (*entity.EventsList, error) {
+	var events *entity.EventsList
+	var err error
+
+	if a.period[period] == "" {
+		return nil, errors.New("Invalid period name")
+	}
+
+	events, err = a.storage.GetEventsByPeriod(a.getDatesByPeriod(period, startDate))
+
+	if err != nil {
+		a.log.Error(err)
+		return nil, err
+	}
+
+	return events, nil
+}
+
+func (a *App) getDatesByPeriod(period string, startDate *time.Time) (*time.Time, *time.Time) {
+	l, _ := time.LoadLocation("Europe/Moscow")
 
 	startDateTime := time.Date(startDate.Year(), startDate.Month(), startDate.Day(), 0, 0, 0, 0, l)
 	endDateTime := startDateTime.Add(24 * time.Hour)
@@ -102,12 +132,5 @@ func (a *App) GetEventsByPeriodConst(period string, startDate *time.Time) (*enti
 	}
 
 	a.log.Debug(startDateTime, endDateTime)
-	events, err = a.storage.GetEventsByPeriod(startDateTime, endDateTime)
-
-	if err != nil {
-		a.log.Error(err)
-		return nil, err
-	}
-
-	return events, nil
+	return &startDateTime, &endDateTime
 }

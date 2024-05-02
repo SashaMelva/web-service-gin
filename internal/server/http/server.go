@@ -33,6 +33,8 @@ func NewServer(log *zap.SugaredLogger, app *app.App, config *config.ConfigHttpSe
 	router.DELETE("/event/:id", handler.DeleteEventHandler)
 	router.PUT("/event/", handler.UpdateEventHandler)
 
+	router.GET("/events-sending/:period", handler.GetEventsBySendingHandler)
+
 	return &Server{
 		srv: &http.Server{
 			Addr:    config.Host + ":" + config.Port,

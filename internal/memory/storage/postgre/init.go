@@ -8,14 +8,14 @@ import (
 )
 
 type Storage struct {
-	Logger       *zap.SugaredLogger
+	log          *zap.SugaredLogger
 	ConnectionDB *sql.DB
 	sync.RWMutex
 }
 
 func New(connection *sql.DB, log *zap.SugaredLogger) *Storage {
 	return &Storage{
-		Logger:       log,
+		log:          log,
 		ConnectionDB: connection,
 	}
 }
