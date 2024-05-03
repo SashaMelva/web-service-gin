@@ -11,6 +11,14 @@ type Config struct {
 	HttpServer *ConfigHttpServer
 	Logger     *ConfigLogger
 	DataBase   *ConfigDB
+	ConfigRMQ  *ConfigRMQ
+}
+
+type ConfigRMQ struct {
+	User     string
+	Password string
+	Host     string
+	Port     string
 }
 
 type ConfigHttpServer struct {
